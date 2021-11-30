@@ -1,3 +1,7 @@
+# Install Chart
+
+`helm -n metallb-system upgrade --install metallb metallb/metallb -f metallb-values.yaml --create-namespace`
+
 # Test
 
 Test metallb (remember to create namespace):
