@@ -1,5 +1,10 @@
 # Install Chart
 
+Add Repo:
+`helm repo add metallb https://metallb.github.io/metallb`
+
+Instal Metallb
+
 `helm -n metallb-system upgrade --install metallb metallb/metallb -f metallb-values.yaml --create-namespace`
 
 # Test
