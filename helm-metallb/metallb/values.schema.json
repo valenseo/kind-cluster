@@ -107,6 +107,12 @@
             "type": "object"
           }
         },
+        "priorityClassName": {
+          "type":"string"
+        },
+        "runtimeClassName": {
+          "type":"string"
+        },
         "affinity": {
           "type": "object"
         },
@@ -149,13 +155,12 @@
       "description": "Override fully qualified app name",
       "type": "string"
     },
-    "existingConfigMap": {
-      "description": "Existing config map to use for metallb configs",
-      "type": "string"
-    },
     "configInLine": {
       "description": "MetalLB configuration",
       "type": "object"
+    },
+    "loadBalancerClass": {
+      "type":"string"
     },
     "rbac": {
       "description": "RBAC configuration",
@@ -167,30 +172,56 @@
         }
       }
     },
-    "psp": {
-      "description": "PSP configuration",
-      "type": "object",
-      "properties": {
-        "create": {
-          "description": "Enable PSP",
-          "type": "boolean"
-        }
-      }
-    },
     "prometheus": {
       "description": "Prometheus monitoring config",
       "type": "object",
       "properties": {
         "scrapeAnnotations": { "type": "boolean" },
         "metricsPort": { "type": "integer" },
+        "secureMetricsPort": { "type": "integer" },
+        "rbacPrometheus": { "type": "boolean" },
         "serviceAccount": { "type": "string" },
         "namespace": { "type": "string" },
+        "rbacProxy": {
+          "description": "kube-rbac-proxy configuration",
+          "type": "object",
+          "properties": {
+            "repository": { "type": "string" },
+            "tag": { "type": "string" }
+          }
+        },
         "podMonitor": {
           "description": "Prometheus Operator PodMonitors",
           "type": "object",
           "properties": {
             "enabled": { "type": "boolean" },
             "additionalMonitors": { "type": "object" },
+            "jobLabel": { "type": "string" },
+            "interval": {
+              "anyOf": [
+                { "type": "integer" },
+                { "type": "null" }
+              ]
+            },
+            "metricRelabelings": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "relabelings": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "serviceMonitor": {
+          "description": "Prometheus Operator ServiceMonitors",
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
             "jobLabel": { "type": "string" },
             "interval": {
               "anyOf": [
@@ -268,16 +299,10 @@
       },
       "required": [ "podMonitor", "prometheusRule" ]
     },
-    "controller": { 
-      "allOf": [
-        { "$ref": "#/definitions/component" },
-        { "description": "MetalLB Controller" }
-      ]
-    },
     "speaker": { 
       "allOf": [
         { "$ref": "#/definitions/component" },
-        { "description": "MetalLB Controller",
+        { "description": "MetalLB Speaker",
           "type": "object",
           "properties": {
             "tolerateMaster": {
@@ -291,20 +316,101 @@
                 },
                 "mlBindPort": {
                   "type": "integer"
+                },
+                "mlSecretKeyPath": {
+                  "type": "string"
                 }
               }
+            },
+            "updateStrategy": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                }
+              },
+              "required": [ "type" ]
             },
             "runtimeClassName": {
               "type": "string"
             },
             "secretName": {
               "type": "string"
+            },
+            "frr": {
+              "description": "Install FRR container in speaker deployment",
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "image": { "$ref": "#/definitions/component/properties/image" },
+                "metricsPort": { "type": "integer" },
+                "secureMetricsPort": { "type": "integer" },
+                "resources:": { "type": "object" }
+              },
+              "required": [ "enabled" ]
+            },
+            "command" : {
+              "type": "string"
+            },
+            "reloader": {
+              "type": "object",
+              "properties": {
+                "resources": { "type": "object" }
+              }
+            },
+            "frrMetrics": {
+              "type": "object",
+              "properties": {
+                "resources": { "type": "object" }
+              }
             }
           },
           "required": [ "tolerateMaster" ]
         }
       ]
+    },
+    "crds": {
+      "description": "CRD configuration",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable CRDs",
+          "type": "boolean"
+        },
+        "validationFailurePolicy": {
+          "description": "Failure policy to use with validating webhooks",
+          "type": "string",
+          "enum": [ "Ignore", "Fail" ]
+        }
+      }
     }
+  },
+  "controller": { 
+    "allOf": [
+      { "$ref": "#/definitions/component" },
+      { "description": "MetalLB Controller",
+        "type": "object",
+        "properties": {
+          "strategy": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              }
+            },
+            "required": [ "type" ]
+          },
+          "command" : {
+            "type": "string"
+          },
+          "webhookMode" : {
+            "type": "string"
+          }
+        }
+      }
+    ]
   },
   "required": [
     "controller",

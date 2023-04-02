@@ -9,6 +9,10 @@ metadata:
     {{- if .Values.prometheus.podMonitor.additionalLabels }}
 {{ toYaml .Values.prometheus.podMonitor.additionalLabels | indent 4 }}
     {{- end }}
+  {{- if .Values.prometheus.podMonitor.annotations }}
+  annotations:
+{{ toYaml .Values.prometheus.podMonitor.annotations | indent 4 }}
+  {{- end }}
 spec:
   jobLabel: {{ .Values.prometheus.podMonitor.jobLabel | quote }}
   selector:
@@ -19,7 +23,7 @@ spec:
     matchNames:
     - {{ .Release.Namespace }}
   podMetricsEndpoints:
-  - port: metrics
+  - port: monitoring
     path: /metrics
     {{- if .Values.prometheus.podMonitor.interval }}
     interval: {{ .Values.prometheus.podMonitor.interval }}
@@ -43,6 +47,10 @@ metadata:
     {{- if .Values.prometheus.podMonitor.additionalLabels }}
 {{ toYaml .Values.prometheus.podMonitor.additionalLabels | indent 4 }}
     {{- end }}
+  {{- if .Values.prometheus.podMonitor.annotations }}
+  annotations:
+{{ toYaml .Values.prometheus.podMonitor.annotations | indent 4 }}
+  {{- end }}
 spec:
   jobLabel: {{ .Values.prometheus.podMonitor.jobLabel | quote }}
   selector:
@@ -53,7 +61,7 @@ spec:
     matchNames:
     - {{ .Release.Namespace }}
   podMetricsEndpoints:
-  - port: metrics
+  - port: monitoring
     path: /metrics
     {{- if .Values.prometheus.podMonitor.interval }}
     interval: {{ .Values.prometheus.podMonitor.interval }}
@@ -67,11 +75,11 @@ spec:
 {{- toYaml .Values.prometheus.podMonitor.relabelings | nindent 4 }}
 {{- end }}
 ---
+{{- if .Values.prometheus.rbacPrometheus }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: {{ template "metallb.fullname" . }}-prometheus
-  namespace: {{ .Release.Namespace }}
 rules:
   - apiGroups:
       - ""
@@ -86,13 +94,13 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ template "metallb.fullname" . }}-prometheus
-  namespace: {{ .Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: {{ template "metallb.fullname" . }}-prometheus
 subjects:
   - kind: ServiceAccount
-    name: {{ .Values.prometheus.serviceAccount }}
-    namespace: {{ .Values.prometheus.namespace }}
+    name: {{ required ".Values.prometheus.serviceAccount must be defined when .Values.prometheus.podMonitor.enabled == true" .Values.prometheus.serviceAccount }}
+    namespace: {{ required ".Values.prometheus.namespace must be defined when .Values.prometheus.podMonitor.enabled == true" .Values.prometheus.namespace }}
+{{- end }}
 {{- end }}

@@ -1,0 +1,24 @@
+# configInline specifies MetalLB's configuration directly, in yaml
+# format. When configInline is used, Helm manages MetalLB's
+# configuration ConfigMap as part of the release, and
+# existingConfigMap is ignored.
+#
+# Refer to https://metallb.universe.tf/configuration/ for
+# available options.
+configInline:
+  address-pools:
+  - name: kind-cluster001
+    protocol: layer2
+    addresses: 
+    - 172.18.1.128/25
+
+prometheus:
+  # scrape annotations specifies whether to add Prometheus metric
+  # auto-collection annotations to pods. See
+  # https://github.com/prometheus/prometheus/blob/release-2.1/documentation/examples/prometheus-kubernetes.yml
+  # for a corresponding Prometheus configuration. Alternatively, you
+  # may want to use the Prometheus Operator
+  # (https://github.com/coreos/prometheus-operator) for more powerful
+  # monitoring configuration. If you use the Prometheus operator, this
+  # can be left at false.
+  scrapeAnnotations: true
