@@ -6,31 +6,35 @@ The following tables list the configurable parameters of the Jenkins chart and t
 
 ### Jenkins Controller
 
-| Parameter                         | Description                          | Default                                   |
-| --------------------------------- | ------------------------------------ | ----------------------------------------- |
-| `checkDeprecation`                | Checks for deprecated values used    | `true`                                 |
-| `clusterZone`                     | Override the cluster name for FQDN resolving    | `cluster.local`                |
-| `nameOverride`                    | Override the resource name prefix    | `jenkins`                                 |
-| `renderHelmLabels`                | Enables rendering of the helm.sh/chart label to the annotations    | `true`                                 |
-| `fullnameOverride`                | Override the full resource names     | `jenkins-{release-name}` (or `jenkins` if release-name is `jenkins`) |
-| `namespaceOverride`               | Override the deployment namespace    | Not set (`Release.Namespace`)             |
-| `controller.componentName`            | Jenkins controller name                  | `jenkins-controller`                          |
-| `controller.testEnabled`              | Can be used to disable rendering test resources when using helm template | `true`                         |
-| `controller.cloudName`                       | Name of default cloud configuration  | `kubernetes`                              |
+| Parameter                                   | Description                                                              | Default                                                              |
+|---------------------------------------------|--------------------------------------------------------------------------|----------------------------------------------------------------------|
+| `checkDeprecation`                          | Checks for deprecated values used                                        | `true`                                                               |
+| `clusterZone`                               | Override the cluster name for FQDN resolving                             | `cluster.local`                                                      |
+| `kubernetesURL`                             | Override the Kubernetes API server URL                                   | `https://kubernetes.default`                                         |
+| `nameOverride`                              | Override the resource name prefix                                        | `jenkins`                                                            |
+| `renderHelmLabels`                          | Enables rendering of the helm.sh/chart label to the annotations          | `true`                                                               |
+| `fullnameOverride`                          | Override the full resource names                                         | `jenkins-{release-name}` (or `jenkins` if release-name is `jenkins`) |
+| `namespaceOverride`                         | Override the deployment namespace                                        | Not set (`Release.Namespace`)                                        |
+| `controller.componentName`                  | Jenkins controller name                                                  | `jenkins-controller`                                                 |
+| `controller.testEnabled`                    | Can be used to disable rendering test resources when using helm template | `true`                                                               |
+| `controller.cloudName`                      | Name of default cloud configuration                                      | `kubernetes`                                                         |
+| `controller.legacyRemotingSecurityEnabled`  | Is remoting security enabled?                                            | Not set (i.e. not enabled)                                           |
 
 #### Jenkins Configuration as Code (JCasC)
 
-| Parameter                         | Description                          | Default                                   |
-| --------------------------------- | ------------------------------------ | ----------------------------------------- |
-| `controller.JCasC.defaultConfig`      | Enables default Jenkins configuration via configuration as code plugin | `true`  |
-| `controller.JCasC.configScripts`      | List of Jenkins Config as Code scripts | `{}`                                    |
-| `controller.JCasC.securityRealm`      | Jenkins Config as Code for Security Realm | `legacy`                             |
-| `controller.JCasC.authorizationStrategy` | Jenkins Config as Code for Authorization Strategy | `loggedInUsersCanDoAnything` |
-| `controller.sidecars.configAutoReload` | Jenkins Config as Code auto-reload settings |                                   |
-| `controller.sidecars.configAutoReload.enabled` | Jenkins Config as Code auto-reload settings (Attention: rbac needs to be enabled otherwise the sidecar can't read the config map) | `true`                                                      |
-| `controller.sidecars.configAutoReload.image` | Image which triggers the reload | `kiwigrid/k8s-sidecar:0.1.144`           |
-| `controller.sidecars.configAutoReload.reqRetryConnect` | How many connection-related errors to retry on  | `10`          |
-| `controller.sidecars.configAutoReload.env` | Environment variables for the Jenkins Config as Code auto-reload container  | Not set |
+| Parameter                         | Description                          | Default                                                           |
+| --------------------------------- | ------------------------------------ |-------------------------------------------------------------------|
+| `controller.JCasC.defaultConfig`      | Enables default Jenkins configuration via configuration as code plugin | `true`                                                            |
+| `controller.JCasC.configScripts`      | List of Jenkins Config as Code scripts | `{}`                                                              |
+| `controller.JCasC.security`      | Jenkins Config as Code for Security section | `legacy`                                                          |
+| `controller.JCasC.securityRealm`      | Jenkins Config as Code for Security Realm | `legacy`                                                          |
+| `controller.JCasC.authorizationStrategy` | Jenkins Config as Code for Authorization Strategy | `loggedInUsersCanDoAnything`                                      |
+| `controller.sidecars.configAutoReload` | Jenkins Config as Code auto-reload settings |                                                                   |
+| `controller.sidecars.configAutoReload.enabled` | Jenkins Config as Code auto-reload settings (Attention: rbac needs to be enabled otherwise the sidecar can't read the config map) | `true`                                                            |
+| `controller.sidecars.configAutoReload.image` | Image which triggers the reload | `kiwigrid/k8s-sidecar:1.24.4`                                     |
+| `controller.sidecars.configAutoReload.reqRetryConnect` | How many connection-related errors to retry on  | `10`                                                              |
+| `controller.sidecars.configAutoReload.envFrom` | Environment variable sources for the Jenkins Config as Code auto-reload container | Not set                                                           |
+| `controller.sidecars.configAutoReload.env` | Environment variables for the Jenkins Config as Code auto-reload container  | Not set                                                           |
 | `controller.sidecars.configAutoReload.containerSecurityContext` | Enable container security context | `{readOnlyRootFilesystem: true, allowPrivilegeEscalation: false}` |
 
 #### Jenkins Configuration Files & Scripts
@@ -76,12 +80,12 @@ The following tables list the configurable parameters of the Jenkins chart and t
 
 | Parameter                         | Description                          | Default                                   |
 | --------------------------------- | ------------------------------------ | ----------------------------------------- |
-| `controller.installPlugins`       | List of Jenkins plugins to install. If you don't want to install plugins set it to `false` | `kubernetes:1.29.2 workflow-aggregator:2.6 git:4.7.1 configuration-as-code:1.47` |
+| `controller.installPlugins`       | List of Jenkins plugins to install. If you don't want to install plugins set it to `false` | `kubernetes:1.31.3 workflow-aggregator:2.6 git:4.10.2 configuration-as-code:1414.v878271fc496f` |
 | `controller.additionalPlugins`    | List of Jenkins plugins to install in addition to those listed in controller.installPlugins | `[]` |
 | `controller.initializeOnce`       | Initialize only on first install. Ensures plugins do not get updated inadvertently. Requires `persistence.enabled` to be set to `true`. | `false` |
 | `controller.overwritePlugins`     | Overwrite installed plugins on start.| `false`                                   |
 | `controller.overwritePluginsFromImage` | Keep plugins that are already installed in the controller image.| `true`            |
-| `controller.installLatestPlugins`      | Set to false to download the minimum required version of all dependencies. | `false` |
+| `controller.installLatestPlugins`      | Set to false to download the minimum required version of all dependencies. | `true` |
 | `controller.installLatestSpecifiedPlugins`      | Set to true to download latest dependencies of any plugin that is requested to have the latest version. | `false` |
 
 #### Jenkins Agent Listener
@@ -95,6 +99,8 @@ The following tables list the configurable parameters of the Jenkins chart and t
 | `controller.agentListenerServiceType`        | Defines how to expose the agentListener service | `ClusterIP`  |
 | `controller.agentListenerServiceAnnotations` | Annotations for the agentListener service       | `{}`         |
 | `controller.agentListenerLoadBalancerIP`     | Static IP for the agentListener LoadBalancer    | Not set      |
+| `controller.agentListenerExternalTrafficPolicy` | [Traffic Policy](https://kubernetes.io/docs/concepts/services-networking/service/#traffic-policies) of for the agentListener service | Not set      |
+| `controller.agentListenerLoadBalancerSourceRanges` | Allowed inbound IP for the agentListener service | `0.0.0.0/0`      |
 
 #### Kubernetes StatefulSet & Service
 
@@ -107,7 +113,9 @@ The following tables list the configurable parameters of the Jenkins chart and t
 | `controller.imagePullSecretName`      | Controller image pull secret              | Not set                                   |
 | `controller.resources`                | Resources allocation (Requests and Limits) | `{requests: {cpu: 50m, memory: 256Mi}, limits: {cpu: 2000m, memory: 4096Mi}}`|
 | `controller.initContainerResources`   | Resources allocation (Requests and Limits) for Init Container            | Not set |
+| `controller.initContainerEnvFrom`     | Environment variable sources for Init Container                          | Not set |
 | `controller.initContainerEnv`         | Environment variables for Init Container                                 | Not set |
+| `controller.containerEnvFrom`         | Environment variable sources for Jenkins Container                       | Not set |
 | `controller.containerEnv`             | Environment variables for Jenkins Container                              | Not set |
 | `controller.usePodSecurityContext`    | Enable pod security context (must be `true` if `runAsUser`, `fsGroup`, or `podSecurityContextOverride` are set) | `true` |
 | `controller.runAsUser`                | Deprecated in favor of `controller.podSecurityContextOverride`.  uid that jenkins runs with. | `1000`                                    |
@@ -184,7 +192,7 @@ The following tables list the configurable parameters of the Jenkins chart and t
 | --------------------------------- | ------------------------------------ | ----------------------------------------- |
 | `controller.ingress.enabled`          | Enables ingress                      | `false`                                   |
 | `controller.ingress.apiVersion`       | Ingress API version                  | `extensions/v1beta1`                      |
-| `controller.ingress.hostName`         | Ingress host name                    | Not set                                   |
+| `controller.ingress.hostName`         | Ingress hostname                    | Not set                                   |
 | `controller.ingress.resourceRootUrl`  | Hostname to serve assets from        | Not set                                   |
 | `controller.ingress.annotations`      | Ingress annotations                  | `{}`                                      |
 | `controller.ingress.labels`           | Ingress labels                       | `{}`                                      |
@@ -229,23 +237,24 @@ The following tables list the configurable parameters of the Jenkins chart and t
 
 | Parameter                         | Description                          | Default                                   |
 | --------------------------------- | ------------------------------------ | ----------------------------------------- |
-| `controller.httpsKeyStore.enable`     | Enables https keystore on jenkins controller      | `false`      |
+| `controller.httpsKeyStore.enable`     | Enables HTTPS keystore on jenkins controller      | `false`      |
 | `controller.httpsKeyStore.jenkinsHttpsJksSecretName`     | Name of the secret that already has ssl keystore      | ``      |
-| `controller.httpsKeyStore.httpPort`   | Http Port that Jenkins should listen on along with https, it also serves liveness and readiness probs port. When https keystore is enabled servicePort and targetPort will be used as https port  | `8081`   |
-| `controller.httpsKeyStore.path`       | Path of https keystore file                  |     `/var/jenkins_keystore`     |
+| `controller.httpsKeyStore.httpPort`   | HTTP Port that Jenkins should listen on along with HTTPS, it also serves liveness and readiness probs port. When HTTPS keystore is enabled servicePort and targetPort will be used as HTTPS port  | `8081`   |
+| `controller.httpsKeyStore.path`       | Path of HTTPS keystore file                  |     `/var/jenkins_keystore`     |
 | `controller.httpsKeyStore.fileName`  | Jenkins keystore filename which will appear under controller.httpsKeyStore.path      | `keystore.jks` |
 | `controller.httpsKeyStore.password`   | Jenkins keystore password                                           | `password` |
 | `controller.httpsKeyStore.jenkinsKeyStoreBase64Encoded`  | Base64 encoded Keystore content. Keystore must be converted to base64 then being pasted here  | a self signed cert |
 
 #### Kubernetes Secret
 
-| Parameter                         | Description                          | Default                                   |
-| --------------------------------- | ------------------------------------ | ----------------------------------------- |
-| `controller.adminUser`                | Admin username (and password) created as a secret if adminSecret is true | `admin` |
-| `controller.adminPassword`            | Admin password (and user) created as a secret if adminSecret is true | Random value |
-| `controller.additionalSecrets`        | List of additional secrets to create and mount according to [JCasC docs](https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/docs/features/secrets.adoc#kubernetes-secrets) | `[]` |
-| `controller.additionalExistingSecrets`| List of additional existing secrets to mount according to [JCasC docs](https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/docs/features/secrets.adoc#kubernetes-secrets) | `[]` |
-| `controller.secretClaims`             | List of `SecretClaim` resources to create | `[]` |
+| Parameter                              | Description                                                                                                                                                                                   | Default                                   |
+|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| ----------------------------------------- |
+| `controller.adminUser`                 | Admin username (and password) created as a secret if adminSecret is true                                                                                                                      | `admin` |
+| `controller.adminPassword`             | Admin password (and user) created as a secret if adminSecret is true                                                                                                                          | Random value |
+| `controller.existingSecret`            | The name of an existing secret containing keys credentials.                                                                                                                                   | `""`|
+| `controller.additionalSecrets`         | List of additional secrets to create and mount according to [JCasC docs](https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/docs/features/secrets.adoc#kubernetes-secrets) | `[]` |
+| `controller.additionalExistingSecrets` | List of additional existing secrets to mount according to [JCasC docs](https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/docs/features/secrets.adoc#kubernetes-secrets)   | `[]` |
+| `controller.secretClaims`              | List of `SecretClaim` resources to create                                                                                                                                                     | `[]` |
 
 #### Kubernetes NetworkPolicy
 
@@ -273,6 +282,7 @@ The following tables list the configurable parameters of the Jenkins chart and t
 | `serviceAccount.name`             | name of the ServiceAccount to be used by access-controlled resources | autogenerated |
 | `serviceAccount.create`           | Configures if a ServiceAccount with this name should be created | `true`         |
 | `serviceAccount.annotations`      | Configures annotation for the ServiceAccount | `{}`                              |
+| `serviceAccount.extraLabels`      | Configures extra labels for the ServiceAccount | `{}`                            |
 | `serviceAccount.imagePullSecretName` | Controller ServiceAccount image pull secret   | Not set                       |
 
 #### Kubernetes ServiceAccount - Agent
@@ -282,6 +292,7 @@ The following tables list the configurable parameters of the Jenkins chart and t
 | `serviceAccountAgent.name`        | name of the agent ServiceAccount to be used by access-controlled resources | autogenerated |
 | `serviceAccountAgent.create`      | Configures if an agent ServiceAccount with this name should be created | `false`         |
 | `serviceAccountAgent.annotations` | Configures annotation for the agent ServiceAccount | `{}`                              |
+| `serviceAccountAgent.extraLabels` | Configures extra labels for the agent ServiceAccount | `{}`                              |
 | `serviceAccountAgent.imagePullSecretName` | Agent ServiceAccount image pull secret   | Not set                       |
 
 ### Jenkins Agent(s)
@@ -309,6 +320,7 @@ The following tables list the configurable parameters of the Jenkins chart and t
 | `agent.envVars`            | Environment variables for the agent Pod         | `[]`                   |
 | `agent.idleMinutes`        | Allows the Pod to remain active for reuse       | 0                      |
 | `agent.imagePullSecretName` | Agent image pull secret                        | Not set                |
+| `agent.hostNetworking`     | Enabled agent to use hostnetwork                | false                  |
 | `agent.nodeSelector`       | Node labels for pod assignment                  | `{}`                   |
 | `agent.connectTimeout`     | Timeout in seconds for an agent to be online    | 100                    |
 | `agent.volumes`            | Additional volumes                              | `[]`                   |
@@ -316,30 +328,32 @@ The following tables list the configurable parameters of the Jenkins chart and t
 | `agent.yamlTemplate`       | The raw yaml of a Pod API Object to merge into the agent spec | Not set  |
 | `agent.yamlMergeStrategy`   | Defines how the raw yaml field gets merged with yaml definitions from inherited pod templates | `override` |
 | `agent.annotations`       | Annotations to apply to the pod                  | `{}`                   |
+| `agent.additionalContainers` | Add additional containers to the agents.      | `[]`                   |
 
 #### Side Container Configuration
 
-| Parameter                  | Description                                     | Default                |
-| -------------------------- | ----------------------------------------------- | ---------------------- |
-| `agent.sideContainerName`  | Side container name in agent                    | jnlp                   |
-| `agent.image`              | Agent image name                                | `jenkins/inbound-agent`|
-| `agent.tag`                | Agent image tag                                 | `4.11-1`               |
-| `agent.alwaysPullImage`    | Always pull agent container image before build  | `false`                |
-| `agent.privileged`         | Agent privileged container                      | `false`                |
-| `agent.resources`          | Resources allocation (Requests and Limits)      | `{requests: {cpu: 512m, memory: 512Mi}, limits: {cpu: 512m, memory: 512Mi}}` |
-| `agent.runAsUser`          | Configure container user                        | Not set                |
-| `agent.runAsGroup`         | Configure container group                       | Not set                |
-| `agent.command`            | Executed command when side container starts     | Not set                |
-| `agent.args`               | Arguments passed to executed command            | `${computer.jnlpmac} ${computer.name}` |
-| `agent.TTYEnabled`         | Allocate pseudo tty to the side container       | false                  |
-| `agent.workingDir`         | Configure working directory for default agent   | `/home/jenkins/agent`        |
+| Parameter                  | Description                                     | Default                                                                        |
+| -------------------------- | ----------------------------------------------- |--------------------------------------------------------------------------------|
+| `agent.sideContainerName`  | Side container name in agent                    | jnlp                                                                           |
+| `agent.image`              | Agent image name                                | `jenkins/inbound-agent`                                                        |
+| `agent.tag`                | Agent image tag                                 | `3107.v665000b_51092-5`                                                        |
+| `agent.alwaysPullImage`    | Always pull agent container image before build  | `false`                                                                        |
+| `agent.privileged`         | Agent privileged container                      | `false`                                                                        |
+| `agent.resources`          | Resources allocation (Requests and Limits)      | `{requests: {cpu: 512m, memory: 512Mi}, limits: {cpu: 512m, memory: 512Mi}}`   |
+| `agent.runAsUser`          | Configure container user                        | Not set                                                                        |
+| `agent.runAsGroup`         | Configure container group                       | Not set                                                                        |
+| `agent.command`            | Executed command when side container starts     | Not set                                                                        |
+| `agent.args`               | Arguments passed to executed command            | `${computer.jnlpmac} ${computer.name}`                                         |
+| `agent.TTYEnabled`         | Allocate pseudo tty to the side container       | false                                                                          |
+| `agent.workingDir`         | Configure working directory for default agent   | `/home/jenkins/agent`                                                          |
 
 #### Other
 
-| Parameter                  | Description                                     | Default                |
-| -------------------------- | ----------------------------------------------- | ---------------------- |
-| `agent.podTemplates`       | Configures extra pod templates for the default kubernetes cloud | `{}`   |
-| `additionalAgents`         | Configure additional agents which inherit values from `agent` | `{}`     |
+| Parameter                   | Description                                     | Default                |
+| --------------------------  | ----------------------------------------------- | ---------------------- |
+| `agent.disableDefaultAgent` | Ignore the default Jenkins Agent configuration  | false                  |
+| `agent.podTemplates`        | Configures extra pod templates for the default kubernetes cloud | `{}`   |
+| `additionalAgents`          | Configure additional agents which inherit values from `agent` | `{}`     |
 
 ### Persistence
 
@@ -368,6 +382,7 @@ The following tables list the configurable parameters of the Jenkins chart and t
 | `backup.serviceAccount.annotations`      | Backup pod annotations                                            | `{}`                              |
 | `backup.image.repo`                      | Backup image repository                                           | `maorfr/kube-tasks`               |
 | `backup.image.tag`                       | Backup image tag                                                  | `0.2.0`                           |
+| `backup.image.imagePullSecretName`       | Backup image pull secret                                          | Not set                           |
 | `backup.extraArgs`                       | Additional arguments for kube-tasks                               | `[]`                              |
 | `backup.existingSecret`                  | Environment variables to add to the cronjob container             | `{}`                              |
 | `backup.existingSecret.*`                | Specify the secret name containing the AWS or GCP credentials     | `jenkinsaws`                      |
@@ -384,5 +399,13 @@ The following tables list the configurable parameters of the Jenkins chart and t
 | `backup.runAsUser`                       | Deprecated in favor of `backup.podSecurityContextOverride`.  uid that jenkins runs with. | `1000`                                    |
 | `backup.fsGroup`                         | Deprecated in favor of `backup.podSecurityContextOverride`.  uid that will be used for persistent volume. | `1000`                             |
 | `backup.podSecurityContextOverride`      | Completely overwrites the contents of the backup pod's security context, ignoring the values provided for `runAsUser`, and `fsGroup`. | Not set |
+| `cronJob.apiVersion`                     | CronJob API version | 'batch/v1' |
 | `awsSecurityGroupPolicies.enabled`      | Enable the creation of SecurityGroupPolicy resources | `false` |
 | `awsSecurityGroupPolicies.policies` | Security Group Policy definitions. `awsSecurityGroupPolicies.enabled` must be `true`  | Not set |
+
+### Helm Tests
+
+| Parameter             | Description                       | Default         |
+| --------------------- | --------------------------------- | --------------- |
+| `helmtest.bats.image` | Image used to test the framework  | `bats/bats`     |
+| `helmtest.bats.tag`   | Test framework image tag override | `1.2.1`         |

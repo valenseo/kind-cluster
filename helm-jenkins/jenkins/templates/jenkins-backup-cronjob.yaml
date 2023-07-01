@@ -1,5 +1,5 @@
 {{- if .Values.backup.enabled }}
-apiVersion: batch/v1beta1
+apiVersion: {{ .Values.cronJob.apiVersion }}
 kind: CronJob
 metadata:
   name: {{ template "jenkins.fullname" . }}-backup
@@ -161,4 +161,8 @@ spec:
           nodeSelector:
           {{- toYaml . | nindent 12 }}
       {{- end }}
+      {{- if .Values.backup.imagePullSecretName }}
+          imagePullSecrets:
+          - name: {{ .Values.backup.imagePullSecretName }}
+      {{- end -}}
 {{- end }}
