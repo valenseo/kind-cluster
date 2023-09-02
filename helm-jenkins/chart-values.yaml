@@ -74,7 +74,7 @@ agent:
         serviceAccount: jenkins
         containers:
           - name: node
-            image: node
+            image: node:18.16-alpine3.17
             command: "/bin/sh -c"
             args: "cat"
             ttyEnabled: true
