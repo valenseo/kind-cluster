@@ -14,7 +14,12 @@ kubectl apply -f ingress-deploy.yaml
 Example:
 ```
 kubectl apply -f usage.yaml
+```
 
+```
 curl localhost/foo/hostname
+```
+
+```
 curl localhost/bar/hostname
 ```
