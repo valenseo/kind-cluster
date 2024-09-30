@@ -8,7 +8,7 @@ Example: `kind create cluster --name k8s-cluster001 --config cluster-3-nodes.yam
 
 Install Ingress:
 ```
-kubectl apply -f ingresss-deploy.yaml
+kubectl apply -f ingress-deploy.yaml
 ```
 
 Example:
